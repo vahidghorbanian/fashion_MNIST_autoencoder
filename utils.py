@@ -2,9 +2,12 @@ import numpy as np
 import pandas as pd
 
 from keras.models import Sequential, Model
-from keras.layers import Dense, Flatten, Dropout, MaxPooling2D, Conv2D, Input
+from keras.layers import Dense, Dropout, MaxPooling2D, Conv2D, Input, UpSampling2D
+from keras import backend as K
+from keras.callbacks import TensorBoard
 
 
+K.clear_session()
 #%% Load and reshape data
 def load_data(isfloat=False, isNorm=False):
     train = pd.read_csv('fashion-mnist_train.csv')
@@ -80,7 +83,39 @@ def dense_autoencoder(data):
 
 
 #%% Dense autoencoder
-#def cnn_autoencoder(data):
+def cnn_autoencoder(data):
+    train_img = data['train_img']
+    test_img = data['test_img']
+    train_img = train_img.reshape(train_img.shape[0], 28, 28, 1)
+    test_img = test_img.reshape(test_img.shape[0], 28, 28, 1)
+    
+    act = 'relu'
+    pad = 'same'
+    epoch = 10
+    
+    input_img = Input(shape=(train_img.shape[1],train_img.shape[2],1))
+    
+    x = Conv2D(32, (3, 3), activation=act, padding=pad)(input_img)  
+    x = MaxPooling2D((2,2), padding=pad)(x)
+    x = Conv2D(64, (3, 3), activation=act, padding=pad)(x)
+    encoded = MaxPooling2D((2,2), padding=pad)(x)
+
+    x = Conv2D(64, (3, 3), activation=act, padding=pad)(encoded)
+    x = UpSampling2D((2,2))(x)
+    x = Conv2D(32, (3, 3), activation=act, padding=pad)(x)
+    x = UpSampling2D((2,2))(x)
+    decoded = Conv2D(1, (3, 3), activation='sigmoid', padding=pad)(x)
+    
+    model = Model(input_img, decoded)
+    model.compile(optimizer='adadelta', loss='binary_crossentropy')
+    
+    model.fit(train_img, train_img,
+                epochs=epoch,
+                batch_size=128,
+                shuffle=True,
+                validation_data=(test_img, test_img))
+    
+    return model
     
     
     
