@@ -91,18 +91,24 @@ def cnn_autoencoder(data):
     
     act = 'relu'
     pad = 'same'
-    epoch = 10
+    epoch = 15
     
     input_img = Input(shape=(train_img.shape[1],train_img.shape[2],1))
     
+    # model 1
     x = Conv2D(32, (3, 3), activation=act, padding=pad)(input_img)  
     x = MaxPooling2D((2,2), padding=pad)(x)
-    x = Conv2D(64, (3, 3), activation=act, padding=pad)(x)
+    x = Dropout(0.25)(x)
+    x = Conv2D(64, (5, 5), activation=act, padding=pad)(x)
+    x = Dropout(0.25)(x)
+    x = MaxPooling2D((2,2), padding=pad)(x)
+    x = Conv2D(128, (7, 7), activation=act, padding=pad)(x)
     encoded = MaxPooling2D((2,2), padding=pad)(x)
-
-    x = Conv2D(64, (3, 3), activation=act, padding=pad)(encoded)
+    x = Conv2D(128, (7, 7), activation=act, padding=pad)(encoded)
     x = UpSampling2D((2,2))(x)
-    x = Conv2D(32, (3, 3), activation=act, padding=pad)(x)
+    x = Conv2D(64, (5, 5), activation=act, padding=pad)(x)
+    x = UpSampling2D((2,2))(x)
+    x = Conv2D(32, (3, 3), activation=act)(x)
     x = UpSampling2D((2,2))(x)
     decoded = Conv2D(1, (3, 3), activation='sigmoid', padding=pad)(x)
     

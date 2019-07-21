@@ -38,6 +38,7 @@ test = test.reshape(10000,28,28,1)
 predict = model.predict(test)
 test = test.reshape(10000,28,28)
 predict = predict.reshape(10000,28,28)
+np.save('test_predict', (test, predict))
 for i, im in enumerate(test[0:10]):
     plt.subplot(2, 10, i+1)
     plt.imshow(test[i])
