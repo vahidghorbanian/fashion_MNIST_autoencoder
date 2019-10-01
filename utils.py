@@ -45,13 +45,13 @@ def load_data(isfloat=False, isNorm=False):
 
 
 #%% Dense autoencoder
-def dense_autoencoder(data):
+def dense_autoencoder(data,epoch):
     train_flat = data['train_flat']
     test_flat = data['test_flat']
     
     act1 = 'relu'
     act2 = 'sigmoid'    
-    epoch = 100
+#    epoch = epoch
     
 #    a = Input(shape=(train_flat.shape[1],))
 #    b = Dense(32, activation=act1)(a)
@@ -83,7 +83,7 @@ def dense_autoencoder(data):
 
 
 #%% Dense autoencoder
-def cnn_autoencoder(data):
+def cnn_autoencoder(data, epoch):
     train_img = data['train_img']
     test_img = data['test_img']
     train_img = train_img.reshape(train_img.shape[0], 28, 28, 1)
@@ -91,7 +91,7 @@ def cnn_autoencoder(data):
     
     act = 'relu'
     pad = 'same'
-    epoch = 15
+#    epoch = 15
     
     input_img = Input(shape=(train_img.shape[1],train_img.shape[2],1))
     
@@ -117,7 +117,7 @@ def cnn_autoencoder(data):
     
     model.fit(train_img, train_img,
                 epochs=epoch,
-                batch_size=128,
+                batch_size=1000,
                 shuffle=True,
                 validation_data=(test_img, test_img))
     
